@@ -19,6 +19,7 @@ class SessionForm extends React.Component {
     this.sessionFormDisplay = this.sessionFormDisplay.bind(this);
     this.logoutDisplay = this.logoutDisplay.bind(this);
     this.onLogout = this.onLogout.bind(this);
+    this.registerTransaction = this.registerTransaction.bind(this);
   }
   //
   componentDidMount() {
@@ -29,7 +30,17 @@ class SessionForm extends React.Component {
       [field]: e.currentTarget.value
     });
   }
-
+  registerTransaction(to_user_id){
+    //Only allow the transaction if the user has the funds to make the transaction
+    if ( this.state.amounts[to_user_id] <= this.props.currentUser.balance )
+    {
+      this.props.createTransaction({to_user_id: to_user_id, num_credits: this.state.amounts[to_user_id]});
+    }
+    else {
+      //Just keeping it simple for now.
+      console.log("insufficient funds");
+    }
+  }
   showUsers(){
     const all = this.props.allUsers.map((user, idx) => {
       return (
@@ -68,7 +79,7 @@ class SessionForm extends React.Component {
                     borderTopColor: 'rgba(66, 54, 0, 0.63)'
                 }
             }} />
-          <button className="btn btn-primary btn-lg" onClick={()=> this.props.createTransaction({to_user_id: user.id, num_credits: this.state.amounts[user.id]})}>
+          <button className="btn btn-primary btn-lg" onClick={()=> this.registerTransaction(user.id)}>
             Send
           </button>
         </div>
@@ -102,7 +113,7 @@ class SessionForm extends React.Component {
       return (
         <div className="redirection">
           <h4 className="tsaccount">Don't have a Mobius account?</h4>
-          <button className="btn btn-warning" onClick={()=> this.setState({formType: 'signup'})}>Sign Up</button>
+          <p className="btn btn-warning" onClick={()=> this.setState({formType: 'signup'})}>Sign Up</p>
         </div>
       )
     }
@@ -110,7 +121,7 @@ class SessionForm extends React.Component {
       return (
         <div className="redirection">
           <h4 className="tsaccount">Already have a Mobius account?</h4>
-          <button className="btn btn-warning" onClick={()=> this.setState({formType: 'login'})}>Log In</button>
+          <p className="btn btn-warning" onClick={()=> this.setState({formType: 'login'})}>Log In</p>
         </div>
       )
     }
@@ -168,7 +179,7 @@ class SessionForm extends React.Component {
 
   sessionFormDisplay(){
     return (
-      <form onSubmit={this.handleSubmit.bind(this)} className="form-inline">
+      <form onSubmit={this.handleSubmit} className="form-inline">
         <br/>
         <div className="login-form">
           <br/>
@@ -214,7 +225,7 @@ class SessionForm extends React.Component {
         {this.props.loggedIn ? this.logoutDisplay() : this.sessionFormDisplay()}
         <h3>{this.props.loggedIn ? `Welcome ${this.props.currentUser.email}!` : null}</h3>
         <h3 style={{borderBottom: 1}}>Your Balance: {this.props.loggedIn ? this.props.currentUser.balance : "Login to see your"} tokens</h3>
-        {this.showUsers()}
+        {this.props.loggedIn ? this.showUsers() : null}
       </div>
     );
   }
