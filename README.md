@@ -1,6 +1,6 @@
 # README
 
-![mobius-demo](/assets/images/mobius_demo.gif)
+![mobius-demo](/app/assets/images/mobius_demo.gif)
 
 ## Security:
 * Race condition prevention with Rails Active Record Locks
