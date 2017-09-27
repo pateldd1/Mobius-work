@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import NumericInput from 'react-numeric-input';
 import { merge } from 'lodash';
 
-class SessionForm extends React.Component {
+class Session extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -43,6 +43,14 @@ class SessionForm extends React.Component {
   }
   showUsers(){
     const all = this.props.allUsers.map((user, idx) => {
+      //dont show the current user because the current user can't send to himself
+      if ( user.email === this.props.currentUser.email )
+      {
+        return (
+          <div key={idx}>
+          </div>
+        )
+      }
       return (
         <div className="panel panel-default" key={idx}>
           <p style={{fontSize: 20, textAlign: 'center', paddingTop: 10}}>{user.email}</p>
@@ -231,4 +239,4 @@ class SessionForm extends React.Component {
   }
 }
 
-export default SessionForm;
+export default Session;

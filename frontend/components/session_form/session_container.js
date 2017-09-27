@@ -5,7 +5,7 @@ import { login, logout, signup } from '../../actions/session_actions';
 import { requestUsers } from '../../actions/all_user_actions';
 import { createTransaction } from '../../actions/transaction_actions';
 import { selectAll } from '../../reducers/selectors';
-import SessionForm from './session_form.jsx';
+import Session from './session.jsx';
 
 const mapStateToProps = ({ currentUser, errors, allUsers }) => {
   return {
@@ -29,4 +29,4 @@ const mapDispatchToProps = (dispatch, { location }) => {
 export default connect(
   mapStateToProps,
   mapDispatchToProps,
-)(SessionForm);
+)(Session);
