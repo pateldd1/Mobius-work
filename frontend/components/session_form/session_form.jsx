@@ -17,6 +17,8 @@ class SessionForm extends React.Component {
     this.guestLogin = this.guestLogin.bind(this);
     this.showUsers = this.showUsers.bind(this);
     this.sessionFormDisplay = this.sessionFormDisplay.bind(this);
+    this.logoutDisplay = this.logoutDisplay.bind(this);
+    this.onLogout = this.onLogout.bind(this);
   }
   //
   componentDidMount() {
@@ -31,12 +33,13 @@ class SessionForm extends React.Component {
   showUsers(){
     const all = this.props.allUsers.map((user, idx) => {
       return (
-        <div className="usercontainer" key={idx}>
-          <p>{user.email}</p>
+        <div className="panel panel-default" key={idx}>
+          <p style={{fontSize: 20, textAlign: 'center', paddingTop: 10}}>{user.email}</p>
           <NumericInput
             className="form-control" min={1}
             onChange={(amt)=> this.setState(merge({}, this.state, {amounts: {[user.id]: amt}}))}
             size={6}
+            value={this.state.amounts[user.id]}
             style={{
                 wrap: {
                     background: '#E2E2E2',
@@ -65,7 +68,7 @@ class SessionForm extends React.Component {
                     borderTopColor: 'rgba(66, 54, 0, 0.63)'
                 }
             }} />
-          <button style={{width: 100, marginTop: 20, textAlign: 'center'}}onClick={()=> this.props.createTransaction({to_user_id: user.id, num_credits: this.state.amounts[user.id]})}>
+          <button className="btn btn-primary btn-lg" onClick={()=> this.props.createTransaction({to_user_id: user.id, num_credits: this.state.amounts[user.id]})}>
             Send
           </button>
         </div>
@@ -90,7 +93,7 @@ class SessionForm extends React.Component {
   }
 
   guestLogin(e){
-    this.props.login({user: {email: "Guest", password: "123456"}})
+    this.props.login({user: {email: "devanshpatel@gmail.com", password: "devansh"}})
   }
 
   //Depending on the formtype, we are going to show signup or log in instead
@@ -99,7 +102,7 @@ class SessionForm extends React.Component {
       return (
         <div className="redirection">
           <h4 className="tsaccount">Don't have a Mobius account?</h4>
-          <h4 className="redirect-to-signup" onClick={()=> this.setState({formType: 'signup'})}>Sign Up</h4>
+          <button className="btn btn-warning" onClick={()=> this.setState({formType: 'signup'})}>Sign Up</button>
         </div>
       )
     }
@@ -107,7 +110,7 @@ class SessionForm extends React.Component {
       return (
         <div className="redirection">
           <h4 className="tsaccount">Already have a Mobius account?</h4>
-          <h4 className="redirect-to-login" onClick={()=> this.setState({formType: 'login'})}>Log In</h4>
+          <button className="btn btn-warning" onClick={()=> this.setState({formType: 'login'})}>Log In</button>
         </div>
       )
     }
@@ -116,20 +119,20 @@ class SessionForm extends React.Component {
 
   guestUser(){
     return (
-      <div className="guest-login">
-        <p className="guest-text" onClick={this.guestLogin}>Guest</p>
-      </div>
+      <button onClick={this.guestLogin} className="btn btn-success">
+        Guest
+      </button>
     )
   }
 
   submitButton(){
     if ( this.state.formType === 'login' )
     {
-      return <input className="entrance-button btn-text" type="submit" value="Login" />
+      return <input className="btn btn-primary" type="submit" value="Login" />
     }
     else
     {
-      return <input className="entrance-button btn-text" type="submit" value="Sign Up" />
+      return <input className="btn btn-primary" type="submit" value="Sign Up" />
     }
   }
 
@@ -145,36 +148,48 @@ class SessionForm extends React.Component {
     );
   }
 
+  onLogout(){
+    this.setState({
+      email: "",
+      password: "",
+      formType: "login",
+      amounts: {}
+    })
+    this.props.logout();
+  }
+
   logoutDisplay(){
     return(
-      <div onClick={this.props.logout.bind(this)}>
-        <p>Logout</p>
-      </div>
+      <button className="btn btn-danger" onClick={this.onLogout}>
+        Logout
+      </button>
     )
   }
 
   sessionFormDisplay(){
     return (
-      <form onSubmit={this.handleSubmit.bind(this)} className="login-form-box">
+      <form onSubmit={this.handleSubmit.bind(this)} className="form-inline">
         <br/>
         <div className="login-form">
           <br/>
-          <div className="registration">
+          <h4>Email</h4>
+          <div className="input-group">
             <input type="text"
               autoFocus="autofocus"
               value={this.state.email}
               placeholder=" email"
               onChange={this.update('email')}
-              className="login-input"
+              className="form-control"
               />
           </div>
           <br/>
-          <div className="registration">
+          <h4>Password</h4>
+          <div className="input-group">
             <input type="password"
               value={this.state.password}
               onChange={this.update('password')}
               placeholder=" password"
-              className="login-input"
+              className="form-control"
               />
           </div>
           <br/>
@@ -191,14 +206,14 @@ class SessionForm extends React.Component {
 
   //OnChange will change the the state on keystroke and will go through update method.
   render() {
-    console.log(this.state);
     return (
-      <div className="login-form-container">
+      <div className="page-container">
         <div className="siteintro">
-          <span className="sitename">Mobius</span>
+          <h1 className="sitename">Mobius</h1>
         </div>
         {this.props.loggedIn ? this.logoutDisplay() : this.sessionFormDisplay()}
-        {this.props.loggedIn ? this.props.currentUser.balance : null}
+        <h3>{this.props.loggedIn ? `Welcome ${this.props.currentUser.email}!` : null}</h3>
+        <h3 style={{borderBottom: 1}}>Your Balance: {this.props.loggedIn ? this.props.currentUser.balance : "Login to see your"} tokens</h3>
         {this.showUsers()}
       </div>
     );
